@@ -51,7 +51,7 @@ export default async (req, res) => {
       if (!havePermission) return res.status(403).send("NOT AUTHORIZED");
 
       await post.delete();
-      res.status(204).send("DElETED");
+      res.status(200).send("DElETED");
       break;
     }
     default: {
