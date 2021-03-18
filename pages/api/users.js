@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { User, validate } from "../../models/User";
 import start_db from "../../config/db";
 
