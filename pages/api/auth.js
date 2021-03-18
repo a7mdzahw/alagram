@@ -26,6 +26,7 @@ export default async (req, res) => {
       }
       const current = await User.findById(req.user._id).select("-password");
       res.send(current);
+      break;
     }
     case "POST": {
       const { error } = validate(req.body);
