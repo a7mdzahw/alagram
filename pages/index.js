@@ -1,65 +1,50 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React, { useState } from "react";
+import Head from "next/head";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { Grid, Container, Modal } from "semantic-ui-react";
 
-export default function Home() {
+import PostCard from "../components/PostCard";
+import PostForm from "../components/PostForm";
+import { recievePosts } from "../store/posts";
+
+export default function Feed() {
+  const [open, setOpen] = useState(false);
+  const posts = useSelector((state) => state.posts);
+  const dispatch = useDispatch();
+
+  const get_posts = async () => {
+    const { data: posts } = await axios.get("/api/posts");
+    console.log(posts);
+    dispatch(recievePosts(posts));
+  };
+
+  React.useEffect(() => {
+    get_posts();
+  }, []);
   return (
-    <div className={styles.container}>
+    <>
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>ZASOCIAL</title>
       </Head>
+      <button className="ui icon button fluid mt-3" onClick={() => setOpen(true)}>
+        <i className="cloud icon"></i> NEW POST
+      </button>
+      <Container style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {posts.loading && <h1>LOADING...</h1>}
+        <Modal open={open} centered onClose={() => setOpen(false)}>
+          <Modal.Header>NEW POST</Modal.Header>
+          <Modal.Content>
+            <PostForm />
+          </Modal.Content>
+        </Modal>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+        {posts.list.map((post) => (
+          <Grid.Column width="16" key={post._id} className="mt-3" stretched>
+            <PostCard post={post} />
+          </Grid.Column>
+        ))}
+      </Container>
+    </>
+  );
 }

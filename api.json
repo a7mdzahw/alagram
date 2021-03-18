@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "1254545656",
+    "user": { "name": "John Doe", "avatar": "camera.jpg" },
+    "pic": "mouse.jpg",
+    "caption": "I took this photo",
+    "likes": [
+      { "user": { "name": "ahmed", "avatar": "alexa.jpg" } },
+      { "user": { "name": "alaa", "avatar": "camera.jpg" } }
+    ],
+    "comments": [
+      {
+        "_id": "6545645645454",
+        "user": { "name": "ahmed", "avatar": "alexa.jpg" },
+        "text": "nice pic",
+        "replies": [
+          {
+            "_id": "5646454545",
+            "user": { "name": "John Doe", "avatar": "camera.jpg" },
+            "text": "yes thaank you"
+          }
+        ]
+      },
+      {
+        "_id": "654565454",
+        "user": { "name": "alaa", "avatar": "alexa.jpg" },
+        "text": "nice man",
+        "replies": [
+          {
+            "_id": "564f6454545",
+            "user": { "name": "John Doe", "avatar": "camera.jpg" },
+            "text": "yes thaank you"
+          }
+        ]
+      }
+    ]
+  }
+]
