@@ -32,8 +32,9 @@ export default async (req, res) => {
       const post = new Post({
         user: req.user._id,
         ...req.body,
-      });
+      }).populate("user", User);
       await post.save();
+
       res.status(201).send(post);
       break;
     }
