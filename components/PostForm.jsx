@@ -1,20 +1,26 @@
 import axios from "axios";
 import React from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "react-hot-toast";
 import { Form } from "semantic-ui-react";
+import { addPost } from "../store/posts";
 
 const initial_state = {
   pic: "",
   caption: "",
 };
 
-const PostForm = () => {
+const PostForm = ({ onClose }) => {
   const [data, setData] = React.useState(initial_state);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const dispatch = useDispatch();
   const handleChange = ({ target }) => {
     setData({ ...data, [target.id]: target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const token = localStorage.getItem("token");
     try {
       const { data: post } = await axios.post("api/posts", data, {
@@ -22,9 +28,11 @@ const PostForm = () => {
           "auth-token": token,
         },
       });
-      console.log(post);
+      dispatch(addPost(post));
+      onClose();
+      toast.success("Post Published");
     } catch (ex) {
-      console.log(ex.message);
+      toast.error((ex.response && ex.response.data) || ex.message);
     }
   };
   return (
@@ -37,7 +45,7 @@ const PostForm = () => {
         <label htmlFor="pic">Caption</label>
         <Form.TextArea rows={3} value={data.caption} id="caption" onChange={handleChange} />
       </Form.Field>
-      <Form.Button type="submit" icon="add" content="Post" />
+      <Form.Button type="submit" icon="add" content="Post" loading={isSubmitting} />
     </Form>
   );
 };

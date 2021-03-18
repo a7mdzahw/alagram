@@ -35,7 +35,7 @@ export default function Feed() {
         <Modal open={open} centered onClose={() => setOpen(false)}>
           <Modal.Header>NEW POST</Modal.Header>
           <Modal.Content>
-            <PostForm />
+            <PostForm onClose={() => setOpen(false)} />
           </Modal.Content>
         </Modal>
 

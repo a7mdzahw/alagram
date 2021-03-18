@@ -4,6 +4,7 @@ import { Icon } from "semantic-ui-react";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../store/user";
 import router from "next/router";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const { isAuth } = useSelector((state) => state.user);
@@ -38,6 +39,7 @@ const Header = () => {
                   localStorage.removeItem("token");
                   dispatch(logoutUser(null));
                   router.push("/");
+                  toast("GoodBye");
                 }}
               >
                 logout

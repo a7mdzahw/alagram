@@ -2,8 +2,9 @@ import React from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { recieveUserPosts } from "../store/posts";
+import { Message } from "semantic-ui-react";
 
-const profile = () => {
+const profile = ({ user }) => {
   const dispatch = useDispatch();
   const { current_user_list: myPosts } = useSelector((state) => state.posts);
   const get_posts = async () => {
@@ -22,9 +23,30 @@ const profile = () => {
   }, []);
   return (
     <div className="ui container mt-3">
-      {myPosts.map((post) => (
-        <img alt={post.caption} src={post.pic} width={200} />
-      ))}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: "3rem",
+        }}
+      >
+        <img
+          src={user.current.avatar}
+          alt="user_pic"
+          style={{ width: 100, height: 100, borderRadius: 50 }}
+        />
+        <div style={{ marginLeft: "2em" }}>
+          <h2>{user.current.name}</h2>
+          <p style={{ color: "grey" }}>{user.current.email}</p>
+        </div>
+      </div>
+      <h3>My PICS</h3>
+      {myPosts.length ? (
+        myPosts.map((post) => <img alt={post.caption} src={post.pic} width={200} key={post._id} />)
+      ) : (
+        <Message error> NO PICS TO SHOW</Message>
+      )}
     </div>
   );
 };

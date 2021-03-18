@@ -12,8 +12,12 @@ export default async (req, res) => {
     case "GET": {
       const posts = await Post.find({})
         .populate("user", "name avatar", User)
-        .populate({ path: "comments", populate: { path: "user", model: User } });
-      res.status(200).json(posts);
+        .populate({
+          path: "comments",
+          populate: { path: "user", select: "-password", model: User },
+        });
+
+      res.status(200).send(posts);
       break;
     }
     case "POST": {
@@ -47,6 +51,7 @@ export default async (req, res) => {
 
       await post.delete();
       res.status(204).send("DElETED");
+      break;
     }
     default: {
       res.send("THIS METHOD ISNOT ALLOWED");

@@ -1,5 +1,6 @@
 import axios from "axios";
 import React from "react";
+import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Feed, Card, Comment, Icon, Button, Modal } from "semantic-ui-react";
 
@@ -9,8 +10,10 @@ import CommentForm from "./CommentForm";
 
 const MYFeed = ({ post }) => {
   const [openComments, setOpenComments] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
   const [likeModal, setLikeModal] = React.useState(false);
-  const { isAuth } = useSelector((state) => state.user);
+  const { isAuth, current } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const handleLike = async () => {
     try {
@@ -27,6 +30,7 @@ const MYFeed = ({ post }) => {
   };
 
   const handleDelete = async () => {
+    setDeleting(true);
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`api/posts?id=${post._id}`, {
@@ -35,8 +39,12 @@ const MYFeed = ({ post }) => {
         },
       });
       dispatch(deletePost(post._id));
+      toast.success("DElETED");
     } catch (ex) {
-      console.log(ex.message);
+      toast.error((ex.response && ex.response.data) || ex.message);
+    } finally {
+      setDeleting(false);
+      setOpenDelete(false);
     }
   };
   return (
@@ -57,9 +65,16 @@ const MYFeed = ({ post }) => {
                 <Icon name="like" onClick={handleLike} />
                 <span onClick={() => setLikeModal(true)}>{post.likes.length}</span>
               </div>
-              <div>
-                <Icon name="delete" className="ui fluid ml-auto" onClick={handleDelete} />
-              </div>
+              {isAuth && current._id == post.user._id && (
+                <div>
+                  <Icon
+                    style={{ cursor: "pointer" }}
+                    name="delete"
+                    className="ui fluid ml-auto red big"
+                    onClick={() => setOpenDelete(true)}
+                  />
+                </div>
+              )}
             </div>
           </Card.Content>
           <Card.Meta style={{ width: 400 }}>
@@ -91,6 +106,13 @@ const MYFeed = ({ post }) => {
             </Feed>
           ))}
         </Modal.Content>
+      </Modal>
+      <Modal open={openDelete} onClose={() => setOpenDelete(false)}>
+        <Modal.Header>Are you sure ?</Modal.Header>
+        <Modal.Actions>
+          <Button content="Delete" color="red" onClick={handleDelete} loading={deleting} />
+          <Button content="Cancel" color="blue" onClick={() => setOpenDelete(false)} />
+        </Modal.Actions>
       </Modal>
     </Feed>
   );

@@ -12,6 +12,9 @@ const postsSlice = createSlice({
       posts.current_user_list = action.payload;
       posts.loading = false;
     },
+    addPost: (posts, action) => {
+      posts.list.unshift(action.payload);
+    },
     addComment: (posts, action) => {
       const index = posts.list.findIndex((p) => p._id == action.payload._id);
       posts.list[index].comments = action.payload.comments;
@@ -33,5 +36,6 @@ export const {
   likePost,
   deletePost,
   addComment,
+  addPost,
 } = postsSlice.actions;
 export default postsSlice.reducer;

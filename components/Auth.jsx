@@ -1,5 +1,6 @@
 import axios from "axios";
 import React from "react";
+import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { Form, FormInput, Button } from "semantic-ui-react";
 import { recieveUser } from "../store/user";
@@ -14,6 +15,7 @@ const initial_state = {
 const Auth = () => {
   const [status, setStatus] = React.useState("login");
   const [data, setData] = React.useState(initial_state);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const dispatch = useDispatch();
   const handleChange = ({ target }) => {
     setData({ ...data, [target.id]: target.value });
@@ -21,22 +23,32 @@ const Auth = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(data);
+    setIsSubmitting(true);
     if (status === "register") {
-      const { data: token } = await axios.post("api/users", data);
-      console.log(token);
-      localStorage.setItem("token", token);
-      const { data: user } = await axios.get("api/auth", { headers: { "auth-token": token } });
-      dispatch(recieveUser(user));
+      try {
+        const { data: token } = await axios.post("api/users", data);
+        localStorage.setItem("token", token);
+        const { data: user } = await axios.get("api/auth", { headers: { "auth-token": token } });
+        dispatch(recieveUser(user));
+        toast.success("Welcome To ZASOCIAL");
+      } catch (ex) {
+        toast.error((ex.response && ex.response.data) || ex.message);
+        setIsSubmitting(false);
+      }
     } else {
-      const { data: token } = await axios.post("api/auth", {
-        email: data.email,
-        password: data.password,
-      });
-      console.log(token);
-      localStorage.setItem("token", token);
-      const { data: user } = await axios.get("api/auth", { headers: { "auth-token": token } });
-      dispatch(recieveUser(user));
+      try {
+        const { data: token } = await axios.post("api/auth", {
+          email: data.email,
+          password: data.password,
+        });
+        localStorage.setItem("token", token);
+        const { data: user } = await axios.get("api/auth", { headers: { "auth-token": token } });
+        dispatch(recieveUser(user));
+        toast.success("Welcome Back");
+      } catch (ex) {
+        toast.error((ex.response && ex.response.data) || ex.message);
+        setIsSubmitting(false);
+      }
     }
   };
   return (
@@ -62,7 +74,7 @@ const Auth = () => {
         <label htmlFor="password">Password</label>
         <FormInput id="password" type="password" value={data.password} onChange={handleChange} />
       </Form.Field>
-      <Button content="Submit" icon="signup" type="submit" fluid primary />
+      <Button content="Submit" icon="signup" type="submit" fluid primary loading={isSubmitting} />
       {status === "login" ? (
         <p>
           New User <a onClick={() => setStatus("register")}>Sign Up</a> Now

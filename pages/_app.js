@@ -5,6 +5,8 @@ import store from "../store";
 import Header from "../components/Header";
 import "../styles/globals.css";
 import { Loader } from "semantic-ui-react";
+import ProgressBar from "nextjs-progressbar";
+import { Toaster } from "react-hot-toast";
 import { recieveUser, logoutUser } from "../store/user";
 import axios from "axios";
 
@@ -55,6 +57,8 @@ const Root = ({ Component, pageProps }) => {
 
   return (
     <>
+      <ProgressBar options={{ showSpinner: false }} />
+      <Toaster />
       <Header />
       <Component {...pageProps} user={{ current, isAuth }} />
     </>

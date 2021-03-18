@@ -42,7 +42,6 @@ export default async (req, res) => {
     }
     case "DELETE": {
       const comment = await Comment.findById(req.query.id);
-      console.log(comment);
       if (!comment) return res.status(404).send("No Such Comment");
 
       if (comment.user.toString() != req.user._id) return res.status(403).send("UNAUTHORIZED");
@@ -52,10 +51,10 @@ export default async (req, res) => {
         path: "comments",
         populate: { path: "user", model: User },
       });
-      post.comments = post.comments.filter((comm) => comm._id.toString() !== comment._id);
+      post.comments = post.comments.filter((comm) => comm._id.toString() !== req.query.id);
       await post.save();
 
-      res.status(204).send(post);
+      res.status(200).send(post);
       break;
     }
     default: {
